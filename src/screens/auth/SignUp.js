@@ -5,6 +5,8 @@ import style from '../../styles/formStyles';
 import TextInput from '../../components/TextInput';
 import IntlPhoneInput from 'react-native-intl-phone-input';
 import Button from '../../components/Button';
+import AuthContext from '../../AuthContext';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 
 const SignUp = ({navigation}) =>{
@@ -12,6 +14,8 @@ const SignUp = ({navigation}) =>{
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [phone, setPhone] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const { register } = React.useContext(AuthContext);
 
     const updateEmail = value => {
         setEmail(value)
@@ -22,6 +26,7 @@ const SignUp = ({navigation}) =>{
         console.log(password)
     }
     const updatePhone = ({dialCode, unmaskedPhoneNumber, phoneNumber, isVerified}) => {
+        setPhone(unmaskedPhoneNumber)
         console.log(dialCode, unmaskedPhoneNumber, phoneNumber, isVerified);
     }
     const updateUser = value => {
@@ -34,6 +39,11 @@ const SignUp = ({navigation}) =>{
     
     return(
         <Container>
+        <Spinner
+          visible={isLoading}
+          textContent={'Loading...'}
+          textStyle={{color:"#ffffff"}}
+          />
              <View style={style.topContainer}>
                 <H1 style={style.welcome}>Create Account,</H1>
                 <H2 style={{color:"#616161", marginBottom:30}}>Sign up to get started!</H2> 
@@ -67,7 +77,10 @@ const SignUp = ({navigation}) =>{
             containerStyle={styles.container}
             placeholder={"Phone Number"} />
 
-            <Button>
+            <Button onClick={() => {
+                setIsLoading(true) 
+                register(email, password, username, phone)
+                }}>
                 <Text style={style.login}>Sign Up</Text>
             </Button>
             <Text style={style.footer}>

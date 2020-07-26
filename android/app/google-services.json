@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "186105528788",
+    "firebase_url": "https://idejos-ed640.firebaseio.com",
+    "project_id": "idejos-ed640",
+    "storage_bucket": "idejos-ed640.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:186105528788:android:a3999b9ee7d15a52dfd641",
+        "android_client_info": {
+          "package_name": "com.ideyjos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "186105528788-f99u5qk3qu3tsammkcl1v0d29bsmu3eh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ideyjos",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "186105528788-uhpi7cgafottefuomi944pv75jjs6ils.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZonRlXfzSkaDwtW75xHhBhcPlM85uKqI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "186105528788-uhpi7cgafottefuomi944pv75jjs6ils.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

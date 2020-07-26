@@ -17,7 +17,8 @@ const style = StyleSheet.create({
         width:"90%",
         marginLeft:"5%",
         paddingLeft:25,
-        marginBottom:30
+        marginBottom:30,
+        height:20
     },
 })
 export default TextInput
