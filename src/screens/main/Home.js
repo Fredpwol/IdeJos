@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Container, Text, H2} from "native-base"
-import AuthContext from '../../AuthContext';
+import {AuthContext} from '../../AuthProvider';
 
 
 const HomeScreen = () => {

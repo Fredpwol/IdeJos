@@ -6,7 +6,7 @@ import Button from '../../components/Button';
 import { GoogleSigninButton, GoogleSignin, statusCodes } from '@react-native-community/google-signin';
 import TextInput from '../../components/TextInput';
 import style from '../../styles/formStyles';
-import AuthContext from '../../AuthContext';
+import { AuthContext } from '../../AuthProvider';
 import Spinner from 'react-native-loading-spinner-overlay';
 import OrDivider from '../../components/OrDivider';
 

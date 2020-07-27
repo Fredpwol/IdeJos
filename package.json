@@ -12,8 +12,9 @@
   "dependencies": {
     "@react-native-community/google-signin": "^4.0.3",
     "@react-native-community/masked-view": "^0.1.10",
-    "@react-native-firebase/app": "^8.2.0",
-    "@react-native-firebase/auth": "^8.2.0",
+    "@react-native-firebase/app": "6.0.3",
+    "@react-native-firebase/auth": "6.0.3",
+    "@react-native-firebase/firestore": "6.0.3",
     "@react-navigation/bottom-tabs": "^5.7.2",
     "@react-navigation/native": "^5.7.1",
     "@react-navigation/stack": "^5.7.1",

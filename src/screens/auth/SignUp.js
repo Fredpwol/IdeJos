@@ -5,7 +5,7 @@ import style from '../../styles/formStyles';
 import TextInput from '../../components/TextInput';
 import IntlPhoneInput from 'react-native-intl-phone-input';
 import Button from '../../components/Button';
-import AuthContext from '../../AuthContext';
+import {AuthContext} from '../../AuthProvider';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 
@@ -26,7 +26,7 @@ const SignUp = ({navigation}) =>{
         console.log(password)
     }
     const updatePhone = ({dialCode, unmaskedPhoneNumber, phoneNumber, isVerified}) => {
-        setPhone(unmaskedPhoneNumber)
+        setPhone(dialCode+unmaskedPhoneNumber)
         console.log(dialCode, unmaskedPhoneNumber, phoneNumber, isVerified);
     }
     const updateUser = value => {
