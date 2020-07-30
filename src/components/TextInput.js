@@ -1,23 +1,58 @@
 import React from 'react';
-import { Input } from 'native-base';
-import { StyleSheet } from 'react-native';
+import {Input, Text} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { View } from 'react-native';
 import {greenTheme} from '../types/color';
 
-const TextInput = (props) => {
-    return (
-        <Input {...props} style={style.inputStyle} />
-    ) 
+const useTextVisibility = () => {
+  const [visible, setVisible] = React.useState(false);
+  const name = visible ? 'eye-slash' : 'eye';
+  const DisplayIcon = (<Icon 
+                        name={name} 
+                        size={24} 
+                        onPress={() => setVisible(!visible)} />)
+
+  return [!visible, DisplayIcon];
 }
 
-const style = StyleSheet.create({
-    inputStyle:{
-        borderColor: greenTheme,
-        borderWidth:1,
-        borderRadius:20,
-        width:"90%",
-        marginLeft:"5%",
-        paddingLeft:25,
-        marginBottom:30,
+
+
+
+const TextInput = ({formikProp, formikKey,name, ...rest }) => {
+
+  const [visible, DisplayIcon] = useTextVisibility()
+  
+  const style = {
+    inputStyle: {
+      width: '90%',
+      marginLeft: '3%',
+      paddingLeft: 25,
+      marginBottom:10
     },
-})
-export default TextInput
+  }
+
+  const borderColor = (formikProp.touched[formikKey] && formikProp.errors[formikKey]) ? 'red' : greenTheme;
+
+  return (<View>
+            <Input 
+            containerStyle={style.inputStyle}
+            onChangeText={formikProp.handleChange(formikKey)}
+            onBlur={formikProp.handleBlur(formikKey)}
+            leftIcon={
+              <Icon
+                name={name}
+                size={24}
+                color='black'
+              />
+            }
+            rightIcon={(name === 'lock'? DisplayIcon : null)}
+            secureTextEntry={(name === 'lock'? visible : false)}
+            errorMessage={formikProp.touched[formikKey] && formikProp.errors[formikKey]}
+            inputContainerStyle={{borderColor:borderColor}}
+            {...rest} />
+        {/* <Text style={{color:"red", marginLeft:"5%", marginBottom:20}} >
+          {  }
+          </Text> */}
+        </View> )
+};
+export default TextInput;

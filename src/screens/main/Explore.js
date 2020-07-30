@@ -1,13 +1,11 @@
-/* eslint-disable react-native/no-inline-styles */
 import * as React from 'react';
 import {Container, Text, H2 } from 'native-base';
 import {AuthContext} from '../../AuthProvider';
+import {StatusBar} from 'react-native'
 import Header from 'react-native-custom-header';
 
-
-const HomeScreen = () => {
+const Chats = () => {
   const {user, logout} = React.useContext(AuthContext);
-  
   return (
     <Container>
         <Header 
@@ -20,10 +18,10 @@ const HomeScreen = () => {
           statusBarStyle={"dark-content"}
          />
       <Text>{'welcome ' + user.displayName}</Text>
-      <H2 onPress={() => logout()} style={{color: 'blue'}}>
-        Logout
+      <H2>
+        Explore page!
       </H2>
     </Container>
   );
 };
-export default HomeScreen;
+export default Chats;

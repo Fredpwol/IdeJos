@@ -24,7 +24,7 @@ export default style = StyleSheet.create({
     },
     footer:{
         alignSelf:"center",
-        paddingBottom:30
+        paddingBottom:30,
     },
     link:{
         fontWeight:"bold",

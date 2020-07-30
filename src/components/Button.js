@@ -2,15 +2,16 @@ import React from 'react';
 import { TouchableNativeFeedback, TouchableOpacity,View, StyleSheet } from 'react-native';
 import { orangeTheme } from '../types/color'
 
+
 const Button = ({children, onClick}) => {
     return(
-        <TouchableOpacity onPress={onClick}>
+        <TouchableNativeFeedback onPress={onClick}>
             <View style={style.container}>
                 <View style={{alignSelf:"center"}}>
                     {children}
                 </View>
             </View>
-        </TouchableOpacity>
+        </TouchableNativeFeedback>
     )
 }
 
