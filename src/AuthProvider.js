@@ -7,12 +7,16 @@ export const AuthContext = React.createContext({});
 
 export const AuthProvider = ({children}) => {
   const [user, setUser] = React.useState(null);
+  const [initialRoute, setInitialRoute] = React.useState('main');
   return (
     <AuthContext.Provider
       value={{
         user,
         setUser,
-        login: async (email, password, errorCallback) => {
+        initialRoute,
+        setInitialRoute,
+        login: async(email, password, errorCallback) => {
+          setInitialRoute("main")
           await auth()
             .signInWithEmailAndPassword(email, password)
             .then((userInfo) => {
@@ -20,12 +24,13 @@ export const AuthProvider = ({children}) => {
             })
             .catch((error) => errorCallback(error));
         },
-        register: async (email, password, username, number, errorCallback) => {
+        register:async(email, password, username, number, errorCallback) => {
+          setInitialRoute('addDetail');
           await auth()
             .createUserWithEmailAndPassword(email, password)
-            .then((userInfo) => {
+            .then(async (userInfo) => {
               userInfo.user.updateProfile({displayName:username})
-              firestore().collection('users').doc(userInfo.user.uid).set({
+              await firestore().collection('users').doc(userInfo.user.uid).set({
                 phoneNumber: number,
                 displayName: username,
               });
@@ -35,8 +40,9 @@ export const AuthProvider = ({children}) => {
         },
         logout: async () => {
           try {
-            await auth().signOut();
-            await AsyncStorage.removeItem("userData")
+            await auth().signOut().then(async ()=>{
+              await AsyncStorage.removeItem("userData")
+            })
           } catch (e) {
             console.error(e);
           }

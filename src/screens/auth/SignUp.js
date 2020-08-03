@@ -11,7 +11,7 @@ import { Formik } from 'formik';
 import * as yup from "yup";
 
 const SignUp = ({ navigation }) => {
-  const { register } = React.useContext(AuthContext);
+  const { register, setRegistered } = React.useContext(AuthContext);
   const [Verified, setVerified] = useState(false);
 
 
@@ -59,11 +59,14 @@ return (
         const {email, password, username, phone} = values;
         const check = (error) => {
           console.log(error.message)
-          switch (error.code){
-            case 'auth/email-already-in-use':
-              actions.setFieldError("email", "Invalid email address, email already taken");
-            default:
-              actions.setFieldError("general", "Signup Failed!")
+          if (error.code === 'auth/email-already-in-use'){
+            actions.setFieldError("email", "Invalid email address, email already taken");
+          }
+          else if(error.code === "auth/invalid-email"){
+            actions.setFieldError("email", "Invalid email address, the email address is badly formatted");
+          }
+          else{
+            actions.setFieldError("general", "Signup Failed!")
           }
           actions.setSubmitting(false);
           
@@ -73,6 +76,7 @@ return (
       validationSchema={validationSchema} >
       {formikProps => (
         <Content>
+          
           <TextInput
             formikKey={'username'}
             formikProp={formikProps}
@@ -120,7 +124,7 @@ return (
           <Text style={{color:"red", marginLeft:"5%", marginBottom:10}} >
           { formikProps.touched.phone && formikProps.errors.phone }
           </Text>
-
+          <Text style={{color:"red", marginHorizontal:"35%"}}>{formikProps.errors.general}</Text>
           <Button onClick={formikProps.handleSubmit}>
               {formikProps.isSubmitting ? (
             <ActivityIndicator color={"#fff"} size={"large"} />

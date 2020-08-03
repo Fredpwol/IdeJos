@@ -29,5 +29,10 @@ export default style = StyleSheet.create({
     link:{
         fontWeight:"bold",
         color:greenTheme,
+    },
+    centerContent:{
+        flex:1,
+        alignContent:"center",
+        paddingTop:"10%"
     }
 })

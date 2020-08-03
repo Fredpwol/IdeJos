@@ -100,7 +100,7 @@ const Login = ({navigation}) => {
         validationSchema={validationSchema}>
         {(formikProp) => (
           <Content>
-            <Text style={{color:"red", marginHorizontal:"38%"}}>{formikProp.errors.general}</Text>
+            <Text style={{color:"red", marginHorizontal:"35%"}}>{formikProp.errors.general}</Text>
             <TextInput
               formikProp={formikProp}
               formikKey={'email'}
