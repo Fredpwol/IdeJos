@@ -17,6 +17,8 @@ import {AuthContext} from '../../AuthProvider';
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 import UUIDGenerator from 'react-native-uuid-generator';
+import categories from '../../types/categories';
+// import Firebase from '../../components/Firebase';
 
 const CreateGroup = ({navigation}) => {
   const {user} = React.useContext(AuthContext);
@@ -33,26 +35,7 @@ const CreateGroup = ({navigation}) => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [uri, setUri] = React.useState('');
 
-  const categories = [
-    'General',
-    'Education',
-    'Religion',
-    'Sport',
-    'Entertainment',
-    'News',
-    'Technology',
-    'Business',
-    'Romance',
-    'Gossip',
-    'Politics',
-    'Science',
-    'Arts',
-    'Comedy',
-    "Housing",
-    "Nature",
-    "Social Service",
-    "Food"
-  ];
+
 
   const isWhiteSpace = (str) => {
     for (var i = 0; i < str.length; i++) {
@@ -97,7 +80,7 @@ const CreateGroup = ({navigation}) => {
       setNameError('Please input a valid alphanumeric character!');
       return;
     } else {
-      await firestore()
+      firestore()
         .collection('GROUPS')
         .add({
           name,
@@ -112,18 +95,31 @@ const CreateGroup = ({navigation}) => {
             text: `Group ${name} created by ${user.displayName}`,
           },
         })
-        .then(async (documentRefrence) => {
+        .then( async(documentRefrence) => {
           if (uri) {
             const ref = storage().ref(
               '/profilePictures/groups/' + documentRefrence.id + 'ProfilePic',
             );
-            await ref
+            ref
               .putFile(uri)
               .then((taskSnapshot) => {
                 if (taskSnapshot.state === storage.TaskState.SUCCESS) {
                   ref.getDownloadURL().then((url) => {
                     documentRefrence.update({
                       photoURL: url,
+                    });
+                    firestore()
+                    .collection("users")
+                    .doc(user.uid)
+                    .collection("GROUPS")
+                    .doc(documentRefrence.id)
+                    .set({
+                      name,
+                      photoURL:url,
+                      latestMessage: {
+                        createdAt: new Date().getTime(),
+                        text: `Group ${name} created by ${user.displayName}`,
+                      },
                     });
                   });
                 }
@@ -133,8 +129,22 @@ const CreateGroup = ({navigation}) => {
                 ToastAndroid.show('Image upload failed!', ToastAndroid.LONG);
               });
           }
-          await documentRefrence.collection('MEMBERS').add({
-            uid: user.uid,
+          else{
+          await firestore()
+            .collection("users")
+            .doc(user.uid)
+            .collection("GROUPS")
+            .doc(documentRefrence.id)
+            .set({
+              name,
+              photoURL:imageUrl,
+              latestMessage: {
+                createdAt: new Date().getTime(),
+                text: `Group ${name} created by ${user.displayName}`,
+              },
+            });
+          }
+          await documentRefrence.collection('MEMBERS').doc(user.uid).set({
             name: user.displayName,
             isAdmin: true,
           });
@@ -143,15 +153,9 @@ const CreateGroup = ({navigation}) => {
             text: `Group ${name} created by ${user.displayName}`,
             system: true,
           });
-          await firestore()
-            .collection('users')
-            .doc(user.uid)
-            .collection('GROUPS')
-            .doc(documentRefrence.id)
-            .set({
-              groupRef: documentRefrence,
-            })
-            .then(navigation.goBack());
+
+          
+          navigation.goBack()
         });
     }
   }
@@ -224,8 +228,8 @@ const CreateGroup = ({navigation}) => {
           style={{width: undefined, marginBottom: 60}}
           selectedValue={category}
           onValueChange={(value) => setCategory(value)}>
-          {categories.sort().map((value, index) => (
-            <Picker.Item label={value} value={value} key={index} />
+          {categories.map((value, index) => (
+            <Picker.Item label={value.name} value={value.name} key={index} />
           ))}
         </Picker>
         <Button

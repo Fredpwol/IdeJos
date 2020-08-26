@@ -1,7 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
-import {View, ActivityIndicator, Alert} from 'react-native';
+import {View, ActivityIndicator, Alert, ToastAndroid} from 'react-native';
 import {firebase} from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import {H1, H2, Container, Content, Text} from 'native-base';
 import Button from '../../components/Button';
 import {
@@ -15,6 +16,7 @@ import {AuthContext} from '../../AuthProvider';
 import OrDivider from '../../components/OrDivider';
 import {Formik} from 'formik';
 import * as yup from 'yup';
+// import Firebase from '../../components/Firebase';
 
 const Login = ({navigation}) => {
   const {login} = React.useContext(AuthContext);
@@ -40,15 +42,24 @@ const Login = ({navigation}) => {
         accessToken,
       );
       // login with credential
-      await firebase.auth().signInWithCredential(credential);
+      const user = await firebase.auth().signInWithCredential(credential);
+      const userData = user.user;
+      await firestore().collection('users')
+      .doc(userData.uid)
+      .set({
+        displayName: userData.displayName,
+        about: '',
+        photoURL:userData.photoURL,
+        phoneNumber: ''
+      })
     } catch (error) {
       console.log(error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
-        Alert.alert("Error",'Login Cancelled!')
+        ToastAndroid.show('Login Cancelled!',ToastAndroid.LONG)
       } else if (error.code === statusCodes.IN_PROGRESS) {
         // operation (e.g. sign in) is in progress already
-        Alert.alert("Error",'Login in proccess!');
+        ToastAndroid.show('Login in proccess!', ToastAndroid.LONG);
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         // play services not available or outdated
         Alert.alert("Error",'Play Service is not available or outdated!');

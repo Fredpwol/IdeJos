@@ -110,7 +110,7 @@ return (
             onChangeText={(values) => {
               const {dialCode , unmaskedPhoneNumber, isVerified} = values;
               setVerified(isVerified)
-              let no = dialCode + unmaskedPhoneNumber;
+              let no = dialCode + unmaskedPhoneNumber.slice(1);
               console.log(no)
               formikProps.setFieldValue("phone",no);
             }}

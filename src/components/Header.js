@@ -5,43 +5,47 @@ import { Image, View, StyleSheet, Dimensions, StatusBar } from 'react-native'
 import { logo } from '../images';
 import Avatar from './Avatar';
 import FastImage from 'react-native-fast-image'
+import { H1 } from 'native-base';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const {width} = Dimensions.get("window")
-const MainHeader = ({leftComponent}) => {
+const MainHeader = ({leftComponent, rightComponent, title}) => {
   const {user} = React.useContext(AuthContext);
  
   return (
+    <SafeAreaView>
     <View style={style.header}>
         <StatusBar backgroundColor={"#fff"} barStyle={"dark-content"} translucent />
-        <Avatar size={"small"} source={{uri: user.photoURL}} />
-        <FastImage source={logo} style={style.title} resizeMode={"contain"} />
+        <View>
+        {leftComponent}
+        </View>
+        <H1 style={{...style.title,fontWeight:"bold", fontFamily:"Roboto" }}>{title}</H1>
         <View style={style.menu} >
-            {leftComponent}
+            {rightComponent}
         </View>   
     </View>
+    </SafeAreaView>
   );
 };
 const style = StyleSheet.create({
     header:{
-        height:80,
+        height:60,
         width,
         backgroundColor:"#fff",
         top:0,
         position:"relative",
-        paddingTop:20,
-        paddingLeft:10,
+        paddingHorizontal:10,
         flexDirection:"row",
+        justifyContent:"space-between"
     },
     title:{
-      marginLeft:80,
       width:120,
       height:60,
+      marginTop:15
     },
     menu:{
-      right:15,
-      top:45,
-      position:"absolute"
+      marginTop:15
     }
 })
 

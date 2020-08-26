@@ -2,6 +2,7 @@ import React from 'react';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-community/async-storage';
+// import Firebase from './components/Firebase';
 
 export const AuthContext = React.createContext({});
 

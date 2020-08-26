@@ -1,8 +1,31 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Dimensions } from 'react-native'
 import {greenTheme, orangeTheme} from '../types/color'
 
 
+const {width, height} = Dimensions.get('window');
 export default style = StyleSheet.create({
+    modalBox: {
+        overflow: 'hidden',
+        alignContent: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+        height,
+        width,
+      },
+      modalContainer: {
+        flexDirection: 'row',
+        height:200,
+        width,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        alignContent: 'center',
+        justifyContent:"space-between",
+        paddingHorizontal:80,
+        bottom: 0,
+        paddingTop: 30,
+        position: 'absolute',
+        backgroundColor: '#fff',
+      },
     welcome:{
         fontWeight:"bold",
         marginBottom:8,
