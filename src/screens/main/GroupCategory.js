@@ -15,6 +15,7 @@ const CategoriesGroup = ({route, navigation}) => {
     firestore()
       .collection('GROUPS')
       .where('category', '==', route.params.name)
+      .where('access', '==', 'public')
       .get()
       .then((querySnapshot) => {
         const threads = querySnapshot.docs.map((doc) => {
