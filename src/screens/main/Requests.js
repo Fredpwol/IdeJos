@@ -13,13 +13,7 @@ import {AuthContext} from '../../AuthProvider';
 import Header from '../../components/Header';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Menu, {MenuItem} from 'react-native-material-menu';
-import firestore from '@react-native-firebase/firestore';
 import {defaultGroupUri, dividerColor} from '../../types/color';
-import {
-  FlatList,
-  TouchableNativeFeedback,
-  ScrollView,
-} from 'react-native-gesture-handler';
 // import {} from 'react-native-elements';
 import Avatar from '../../components/Avatar';
 import {View, StyleSheet, SectionList} from 'react-native';
@@ -28,7 +22,7 @@ import {Button} from 'react-native-elements';
 import { deleteRequest, cancelRequest, confirmRequest } from '../../types/utils';
 
 function ListItemDisplay({item, section}) {
-    const {user} = useContext(AuthContext)
+  const {user} = useContext(AuthContext)
   const [pic, setPic] = useState(null);
   const [name, setName] = useState('');
   const [uid, setUid] = useState('')
