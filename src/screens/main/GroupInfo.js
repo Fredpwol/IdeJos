@@ -58,9 +58,36 @@ const GroupInfo = ({navigation, route}) => {
           _id: documentSnaphot.id,
           isAdmin: false,
           displayName: '',
+          status:null,
           ...documentSnaphot.data(),
           ...tempData,
         };
+        firestore().doc(`status/${data._id}`).get().then(docSnap => {
+          if(docSnap.exists){
+            const val = docSnap.data();
+            if(val.state == "online"){
+              data.status = "Online";
+            }
+            else{
+              const now = new Date();
+              const seen = val.last_changed.toDate();
+              let day = "";
+              if(now.getDate() == seen.getDate()){
+                day = "today";
+              }
+              else if(now.getDate() == seen.getDate() + 1){
+                day = "yesterday";
+              }
+              else{
+                day = seen.toLocaleDateString();
+              }
+              console.log(now.toDateString())
+              let hour = (seen.getUTCHours() + 1) % 24;
+              let minute = seen.getUTCMinutes();
+              data.status = `last seen: ${day} at ${hour}:${minute}`;
+            }
+          }
+        });
         if (data._id == user.uid) {
           data.displayName = 'You';
           setIsAdmin(data.isAdmin);
@@ -82,7 +109,7 @@ const GroupInfo = ({navigation, route}) => {
   const toggleVisible = () => setisVisble((isVisible) => !isVisible);
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -154,6 +181,7 @@ const GroupInfo = ({navigation, route}) => {
             title={'See More'}
             leftIcon={<Icon name={'chevron-down'} size={24} color={'grey'} />}
             titleStyle={{fontSize: 18, color: 'grey'}}
+            onPress={() => navigation.navigate("members", {group})}
           />
           <Divider style={{backgroundColor: dividerColor, height: 20}} />
           <ListItem
@@ -162,7 +190,7 @@ const GroupInfo = ({navigation, route}) => {
             titleStyle={{fontSize: 20, color: 'red'}}
           />
         </View>
-        <UserModalScreen isVisible={isVisible} onPress={toggleVisible} person={selectedUser} />
+        <UserModalScreen isVisible={isVisible} onClose={toggleVisible} person={selectedUser} />
       </Content>
     </Container>
   );
