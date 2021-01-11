@@ -39,10 +39,15 @@ export const AuthProvider = ({children}) => {
             })
             .catch((error) => errorCallback(error));
         },
-        logout: async () => {
+        logout: () => {
           try {
-            await auth().signOut().then(async ()=>{
-              await AsyncStorage.removeItem("userData")
+            auth().signOut().then(()=>{
+              var userStatusFirestoreRef = firestore().collection('status').doc(user.uid);
+              userStatusFirestoreRef.set({
+                state: 'offline',
+                last_changed: new firestore.Timestamp.now(),
+              }).then(async() =>  await AsyncStorage.removeItem("userData") )
+              
             })
           } catch (e) {
             console.error(e);
