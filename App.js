@@ -16,22 +16,17 @@ import Login from './src/screens/auth/Login';
 import SignUp from './src/screens/auth/SignUp';
 import Loading from './src/components/Loading';
 import HomeScreen from './src/screens/main/Home';
-import Explore from './src/screens/main/Explore';
 import Chats from './src/screens/main/Chats';
-import AddDetail from './src/screens/auth/AddDetail';
 import auth, {firebase} from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 import {AuthContext, AuthProvider} from './src/AuthProvider';
 import AsyncStorage from '@react-native-community/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import Menu, {MenuItem} from 'react-native-material-menu';
 
-import userChatRoom from './src/screens/main/userChatRoom';
+import HomeStack from './src/screens/main/HomeStack';
 import {orangeTheme} from './src/types/color';
-import CreateGroup from './src/screens/main/CreateGroup';
 import ChatRoom from './src/screens/main/ChatRoom';
-import UserDetails from './src/screens/main/UserDetails';
 import Firebae from './src/components/Firebase';
 import Categories from './src/screens/main/Categories';
 import GroupCategory from './src/screens/main/GroupCategory';
@@ -39,13 +34,13 @@ import Recommend from './src/screens/main/Recommend';
 import GroupDetails from './src/screens/main/GroupDetails';
 import Requests from './src/screens/main/Requests';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import FastImage from 'react-native-fast-image';
 import Avatar from './src/components/Avatar';
 import Header from './src/components/Header';
 import {View, TouchableNativeFeedback} from 'react-native';
 import GroupInfo from './src/screens/main/GroupInfo';
-import { userDataContext, UserDataProvider } from './src/UserDataProvider';
-import Contacts from './src/screens/main/Contacts';
+import { UserDataProvider} from './src/UserDataProvider';
+import {BadgeProvider, BadgeContext} from './src/BadgeCounterProvider';
+import Members from './src/screens/main/Members';
 
 const topTab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -65,6 +60,7 @@ function AuthStack() {
 }
 
 function GroupStack() {
+  const {topicCounter, chatCounter, requestCounter} = useContext(BadgeContext);
   return (
     <Tab.Navigator
       screenOptions={({route, navigation}) => ({
@@ -78,7 +74,7 @@ function GroupStack() {
           } else if (route.name === 'Discover') {
             iconName = 'compass-outline';
           } else if (route.name === 'Requests') {
-            iconName = 'paper-plane';
+            iconName = 'paper-plane-outline';
           }
 
           // You can return any component that you like here!
@@ -90,12 +86,31 @@ function GroupStack() {
         inactiveTintColor: 'gray',
         labelStyle: {fontSize: 15},
         style: {height: 60},
-        showLabel:false,
+        showLabel: false,
       }}>
-      <Tab.Screen name={'Groups'} component={HomeScreen} initialParams={{title:"Topics"}} />
-      <Tab.Screen name={'Chats'} component={Chats} initialParams={{title:"Chats"}} />
-      <Tab.Screen name={'Discover'} component={ExploreStack} initialParams={{title:"Discover"}} />
-      <Tab.Screen name={'Requests'} component={Requests} initialParams={{title:"Requests"}} />
+      <Tab.Screen
+        name={'Groups'}
+        component={HomeScreen}
+        initialParams={{title: 'Topics'}}
+        options={{tabBarBadge: topicCounter || null}}
+      />
+      <Tab.Screen
+        name={'Chats'}
+        component={Chats}
+        initialParams={{title: 'Chats'}}
+        options={{tabBarBadge: chatCounter || null}}
+      />
+      <Tab.Screen
+        name={'Discover'}
+        component={ExploreStack}
+        initialParams={{title: 'Discover'}}
+      />
+      <Tab.Screen
+        name={'Requests'}
+        component={Requests}
+        initialParams={{title: 'Requests'}}
+        options={{tabBarBadge: requestCounter || null}}
+      />
     </Tab.Navigator>
   );
 }
@@ -143,8 +158,8 @@ function ExploreTabs() {
   );
 }
 
-function MainStack() {
-  const menuRef = useRef()
+export function MainStack() {
+  const menuRef = useRef();
   return (
     <Stack.Navigator initialRouteName={'Groups'}>
       <Stack.Screen
@@ -168,32 +183,36 @@ function MainStack() {
                 />
               </View>
             </TouchableNativeFeedback>
-          ),headerRight:() => {
-
+          ),
+          headerRight: () => {
             return (
               <Menu
-            ref={menuRef}
-            button={
-              <Ionicons
-                name={'ellipsis-vertical'}
-                size={24}
-                onPress={() => menuRef.current.show()}
-                style={{marginRight:10}}
-              />
-            }
-            
-            >
-            <MenuItem
-              onPress={() => {
-                menuRef.current.hide();
-                navigation.navigate('groupInfo', {group:route.params.group});
-              }} >
-              Group Info
-            </MenuItem>
-            <MenuItem onPress={() => menuRef.current.hide()}>Mute Group</MenuItem>
-            <MenuItem onPress={() => menuRef.current.hide()}>Leave Group</MenuItem>
-          </Menu>
-            )
+                ref={menuRef}
+                button={
+                  <Ionicons
+                    name={'ellipsis-vertical'}
+                    size={24}
+                    onPress={() => menuRef.current.show()}
+                    style={{marginRight: 10}}
+                  />
+                }>
+                <MenuItem
+                  onPress={() => {
+                    menuRef.current.hide();
+                    navigation.navigate('groupInfo', {
+                      group: route.params.group,
+                    });
+                  }}>
+                  Group Info
+                </MenuItem>
+                <MenuItem onPress={() => menuRef.current.hide()}>
+                  Mute Group
+                </MenuItem>
+                <MenuItem onPress={() => menuRef.current.hide()}>
+                  Leave Group
+                </MenuItem>
+              </Menu>
+            );
           },
         })}
       />
@@ -204,121 +223,23 @@ function MainStack() {
           title: route.params?.name ? route.params.name : 'Catgories',
         })}
       />
-      
-      <Stack.Screen name={'groupDetails'} component={GroupDetails} options={{title:"Details"}} />
-      <Stack.Screen name={"groupInfo"} component={GroupInfo} options={
-        {
-          title:"Group Info", 
-          gestureEnabled:true,
-          gestureDirection:"horizontal-inverted",
-          cardOverlayEnabled: true,
-          }} />
-    </Stack.Navigator>
-  );
-}
 
-function HomeStack(props) {
-  const {initialRoute, user} = useContext(AuthContext);
-  const {setContacts, setRequestSent, setRequestRecieved, setUserData} = useContext(userDataContext)
-  useEffect(()=>{
-    const unsubscribe = firestore().collection("users")
-      .doc(user.uid)
-      .collection('CONTACTS')
-      .onSnapshot(querySnapshot => {
-        const threads = querySnapshot.docs.map(docs => {
-        const data = {
-          _id : docs.id,
-          ...docs.data()
-        }
-        return data;
-        })
-        setContacts(threads)
-      })
-      const sentUnsubscribe = firestore().collection("users")
-      .doc(user.uid)
-      .collection('request_sent')
-      .onSnapshot(querySnapshot => {
-        const threads = querySnapshot.docs.map(docs => {
-        const data = {
-          _id : docs.id,
-          ...docs.data()
-        }
-        return data;
-        })
-        setRequestSent(threads)
-      })
-      const recievedUnsubscribe = firestore().collection("users")
-      .doc(user.uid)
-      .collection('requests_recieved')
-      .onSnapshot(querySnapshot => {
-        const threads = querySnapshot.docs.map(docs => {
-        const data = {
-          _id : docs.id,
-          ...docs.data()
-        }
-        return data;
-        })
-        setRequestRecieved(threads)
-      })
-      const userDataUnsubscribe = firestore().collection("users")
-      .doc(user.uid)
-      .onSnapshot(docSnapshot => {
-          setUserData({...docSnapshot.data()})
-        })
-    return () => [unsubscribe(), sentUnsubscribe(), recievedUnsubscribe(), userDataUnsubscribe()]
-  },[])
-  return initialRoute === 'addDetail' ? (
-    <Stack.Navigator
-      {...props}
-      screenOptions={{
-        headerShown: false,
-      }}>
-      <Stack.Screen name={'addDetail'} component={AddDetail} />
-    </Stack.Navigator>
-  ) : (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-      initialRouteName={'main'}>
-      <Stack.Screen name={'main'} component={MainStack} />
-      <Stack.Screen name={'createGroup'} component={CreateGroup} />
       <Stack.Screen
-        name={'userDetails'}
-        component={UserDetails}
+        name={'groupDetails'}
+        component={GroupDetails}
+        options={{title: 'Details'}}
+      />
+      <Stack.Screen
+        name={'groupInfo'}
+        component={GroupInfo}
         options={{
-          headerShown: true,
-          title: 'Me',
+          title: 'Group Info',
+          gestureEnabled: true,
+          gestureDirection: 'horizontal-inverted',
+          cardOverlayEnabled: true,
         }}
       />
-      <Stack.Screen 
-      name="userChat" 
-      component={userChatRoom} 
-      options={({navigation, route}) => (
-        {
-          headerShown:true,
-          title:route.params.contact.displayName,
-          headerLeft: ({onPress}) => (
-            <TouchableNativeFeedback onPress={onPress}>
-              <View style={{flexDirection: 'row'}}>
-                <Ionicons name="arrow-back" size={24} style={{paddingTop: 5}} />
-                <Avatar
-                  source={{uri: route.params.contact.photoURL}}
-                  style={{width: 40, height: 40, borderRadius: 20}}
-                  onPress={onPress}
-                />
-              </View>
-            </TouchableNativeFeedback>
-          )
-        }
-      )} />
-      <Stack.Screen 
-      name={'contacts'}
-      component={Contacts}
-      options={{
-        headerShown:true,
-        title:"Contacts"
-      }} />
+      <Stack.Screen name="members" component={Members} options={{title:"Members"}} />
     </Stack.Navigator>
   );
 }
@@ -347,21 +268,22 @@ const Routes = () => {
     }
   };
 
-
   function onAuthStateChanged(user) {
-    setUser(user);
-    storeItem(user);
+    if (user){
+      setUser(user);
+    }
+    else{
+      setUser(null)
+    }
+
     if (initializing) setInitializing(false);
   }
   useEffect(() => {
-    getItem();
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     setLoading(false);
     return subscriber; // unsubscribe on unmount
   }, []);
 
-
-  
   // if (initializing) return null;
   if (loading) {
     return <Loading />;
@@ -378,9 +300,11 @@ const App = () => {
   return (
     <AuthProvider>
       <UserDataProvider>
-        <SafeAreaProvider>
-          <Routes />
-        </SafeAreaProvider>
+        <BadgeProvider>
+          <SafeAreaProvider>
+            <Routes />
+          </SafeAreaProvider>
+        </BadgeProvider>
       </UserDataProvider>
     </AuthProvider>
   );
