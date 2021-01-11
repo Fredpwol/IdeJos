@@ -15,31 +15,32 @@ export default function UserModalScreen({person, isVisible, onClose}) {
   const { user} = useContext(AuthContext);
   const { contacts, checkUser, checkSent, requestSent } = useContext(userDataContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null)
+  const [selectedUser, setSelectedUser] = useState(null);
   
   const inContact = useMemo(() => {
       if(selectedUser){
-        return checkUser(selectedUser._id)
+        return checkUser(selectedUser._id);
       }
       
-  } ,[selectedUser, requestSent])
+  } ,[selectedUser, requestSent]);
   const inSent = useMemo(() => {
     if(selectedUser){
-      return checkSent(selectedUser._id)
+      return checkSent(selectedUser._id);
     }      
-  } ,[selectedUser, requestSent])
-  console.log(person)
-  useEffect(() => setSelectedUser(person), [person]);
+  } ,[selectedUser, requestSent]);
+  useEffect(() => {
+    setSelectedUser(person);
+  } , [person]);
 
   const sendRequest = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     await firestore().collection('users')
      .doc(selectedUser._id) 
      .collection('requests_recieved')
      .doc(user.uid)
      .set({
        userRef: firestore().collection('users').doc(user.uid)
-     })
+     });
     await firestore().collection('users')
      .doc(user.uid)
      .collection('request_sent')
@@ -48,8 +49,8 @@ export default function UserModalScreen({person, isVisible, onClose}) {
        {
          userRef: firestore().collection('users').doc(selectedUser._id)
        }
-     )
-     setIsLoading(false)
+     );
+     setIsLoading(false);
   }
   return (
     <Modal
@@ -78,7 +79,14 @@ export default function UserModalScreen({person, isVisible, onClose}) {
                     }}>
                     {selectedUser.displayName || selectedUser.name}
                   </Text>
-                  <Text style={{color: 'grey', fontSize: 13}}>last seen</Text>
+                  <Text style={{color: 'grey', fontSize: 13, marginBottom:10}}>
+                  {selectedUser.status == "Online" ? (
+                    <Text style={{color:"blue"}}>Online</Text>
+                  )
+                  :
+                    selectedUser.status
+                  }
+                  </Text>
                   {!inContact && selectedUser._id !== user.uid ? 
                    !inSent ? (
                     <Button
