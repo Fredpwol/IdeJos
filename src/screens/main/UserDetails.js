@@ -30,13 +30,15 @@ export default UserDetails = () => {
   const [title, setTitle] = React.useState('');
   const [icon, setIcon] = React.useState('');
   const [value, setValue] = React.useState('');
-  const [count, username, handleChange] = useFixedEntry(50);
+  const [userCount, username, handleChange] = useFixedEntry(50);
+  const [aboutCount, about, handleAboutChange] = useFixedEntry(200);
 
   React.useEffect(() => {
     db.collection('users')
       .doc(user.uid)
-      .get()
-      .then((doc) => setUserData(doc.data()));
+      .onSnapshot((doc) => {
+        setUserData(doc.data());
+      });
       
   }, []);
 
@@ -62,7 +64,7 @@ export default UserDetails = () => {
       setVisible(false);
       await storeUploadImage(image, setUser, storeItem, (url) => {
         setLoading(false);
-        setAvatar(url)
+        setAvatar(url);
       });
     }
   };
@@ -74,15 +76,25 @@ export default UserDetails = () => {
         {
           displayName: username
         }
-      )
+      );
+    }
+      let data = {};
+      switch (title) {
+        case "Username":
+          data.displayName = username;
+          break;
+        case "Bio":
+          data.about = about;
+          break;
+        default:
+          break;
+      }
       await db
       .collection('users')
       .doc(user.uid)
       .update(
-        {
-          displayName: username
-        }
-      )
+        data
+      );
       setUser(auth().currentUser)
       storeItem(auth().currentUser)
       setIsUpdating(false);
@@ -90,7 +102,6 @@ export default UserDetails = () => {
       setTitle('');
       setIcon('');
       setValue('');
-    }
   }
 
   return (
@@ -119,7 +130,7 @@ export default UserDetails = () => {
           bottomDivider
           topDivider
           titleStyle={style.title}
-          onPress={() => editModal("Username", "person", user.displayName)}
+          onPress={() => editModal("Username", "person" ,user.displayName)}
         />
         <ListItem
           title={'Bio'}
@@ -130,6 +141,7 @@ export default UserDetails = () => {
           rightIcon={{name: 'edit'}}
           bottomDivider
           titleStyle={style.title}
+          onPress={() => editModal("Bio", "alert-circle-outline", userData?.about)}
         />
         <ListItem
           title={'Mobile Number'}
@@ -187,11 +199,24 @@ export default UserDetails = () => {
             <View style={style.inputBox} >
               <Input
               autoFocus
+              multiline={title === "Username" ? false : true}
               defaultValue={value}
               label={title}
-              leftIcon={{name:icon, type:"ionicons"}}
-              rightIcon={<Text>{count}</Text>}
-              onChangeText={value => handleChange(value)}
+              leftIcon={(<Icon name={icon} size={20} />)}
+              rightIcon={<Text>
+                {title === "Username" ? userCount : title === "Bio" ? aboutCount : 0 }
+                </Text>}
+              onChangeText={value =>{
+                switch (title) {
+                  case "Username":
+                    handleChange(value);
+                    break;
+                  case "Bio":
+                    handleAboutChange(value);
+                  default:
+                    break;
+                }
+              } }
                />
                <View style={style.buttonContainer}>
                <Button
