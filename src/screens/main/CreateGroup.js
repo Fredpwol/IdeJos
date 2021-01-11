@@ -25,7 +25,7 @@ const CreateGroup = ({navigation}) => {
   const [loading, setLoading] = React.useState(false);
   const [avatar, setAvatar] = React.useState(null);
   const maxEntry = 500;
-  const maxName = 50;
+  const maxName = 25;
   const [access, setAccess] = React.useState('public');
   const [count, description, handleDescriptionCount] = useFixedEntry(maxEntry);
   const [nameCount, name, handleNameCount] = useFixedEntry(maxName);
