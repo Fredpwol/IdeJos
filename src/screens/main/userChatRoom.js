@@ -50,16 +50,20 @@ const ChatRoom = ({route, navigation}) => {
                 received:true
               }
               ,{merge:true}
-            ).then(() => {
-              firestore().collection('users')
+            ).then(async() => {
+            const contactRef = firestore().collection('users')
             .doc(contact._id)
             .collection('CHATS')
             .doc(user.uid)
-            .update(
-              {
-                "latestMessage.received": true
-              }
-            )
+            const contactDoc = await contactRef.get()
+            if (contactDoc.exists){
+              contactRef.update(
+                {
+                  "latestMessage.received": true
+                }
+              )
+            }
+          
             })
             
           }
